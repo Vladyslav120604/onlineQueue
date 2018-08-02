@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="css/styles.css">
-    <title>Online Queue</title>
-</head>
-<body>
-    <ul class="content">
-        <li class="login"><button class="addToQueue">submit</button></li>
-        <li class="chat">
-            <progress id="userProgress" value='100' max="100"></progress>
-        </li>
-        <li class="mainBtnBlock"><button id="mainBtn" disabled='true'>click me</button></li>
-    </ul>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="/js/index.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/styles.css">
+  <title>Online Queue</title>
+</head>
+
+<body>
+  <ul class="content">
+    <li class="login"><button class="addToQueue">submit</button></li>
+    <li class="chat">
+      <progress id="userProgress" value='100' max="100"></progress>
+    </li>
+    <li class="mainBtnBlock"><button id="mainBtn" disabled='true'>click me</button></li>
+    <li id="time"></li>
+  </ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="/js/index.js"></script>
 </body>
+
 </html>
