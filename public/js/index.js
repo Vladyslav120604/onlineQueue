@@ -18,8 +18,12 @@ socket.on('set timer', function(time){
 
 socket.on('give access', function(){
     console.log('give access');
-    timer(60);
+    timer(10);
     setAccessToBtn(false);
+});
+
+socket.on('endless access', function(){
+    console.log('endless');
 });
 
 socket.on('take away access', function(){

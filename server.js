@@ -20,7 +20,8 @@ io.on('connection', function(socket){
     socket.on('add to queue', function(){
         queue.push({
             id: socket.id,
-            time: 60
+            time: 10,
+            status: 'ending'
         });
 
         socket.queueUserId = queue.length-1;
@@ -39,12 +40,23 @@ function accessTimer(userId, socket){
         queue[userId]['time']--;
         console.log(userId);
         console.log(queue[userId]['time']);
+        if(queue[userId]['time'] == 1 && queue.length == 1){
+        	console.log('endless');
+            socket.emit('endless access');
+        	queue[userId]['status'] = 'endless';
+        	clearTimeout(accessTimeout);
+        };
+        if(queue[userId]['status'] == 'endless' && queue.length > 1){
+            socket.emit('take away access');
+            socket.disconnect();
+        	console.log('finish');
+        }
     }, 1000)
-    setTimeout(function(){
+    var accessTimeout = setTimeout(function(){
         clearInterval(queueTimer);
         socket.emit('take away access');
         socket.disconnect();
-    }, 60000)
+    }, 10000)
 }
 
 function queueTimer(timeToStart, socket){
