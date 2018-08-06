@@ -5,7 +5,7 @@ var io = require('socket.io')(http);
 
 var queue = [];
 var isUserAdded = false;
-const ACCESSSECONDS = 10;
+const ACCESSSECONDS = 20;
 app.use(express.static(__dirname +'/public'));
 
 
@@ -32,6 +32,7 @@ io.on('connection', function(socket){
         updateTimers(index);
         deleteUserFromQueue(index);
         // console.log(queue);
+        io.emit('update timers', queue);
     });
 
     socket.on('add to queue', function(){
@@ -68,7 +69,7 @@ function accessTimer(socket, isDelete){  //вот здесь userId = 0
           socket.disconnect();
           return 0;
         }
-        console.log('Time to access end: ' + queue[0]['time']);
+        // console.log('Time to access end: ' + queue[0]['time']);
         queue[0]['time']--;
       }, 1000);
 }
@@ -101,7 +102,7 @@ function timer(socket) {
       return 0;
     }
     var toAccess = queue[index]['time']-10;
-    console.log('Time to Access: ' + toAccess);
+    // console.log('Time to Access: ' + toAccess);
     queue[index]['time']--;
   }, 1000);
 }
@@ -135,11 +136,16 @@ function deleteUserFromQueue(id){
 }
 
 function updateTimers(deleteIndex) {
-    var delTime = queue[deleteIndex]['time'];
-    for (var i = deleteIndex; i < queue.length; i++) {
-      queue[i]['time']-=delTime;
+    // var delTime = queue[deleteIndex]['time'];
+    if (deleteIndex == 0) {
+      return false;
     }
-    io.emit('update timers', queue);
+    for (var i = (deleteIndex+1); i < queue.length; i++) {
+      console.log(queue[i]['time'] + ' -> ' + queue[i-1]['time']);
+      var prevTime = queue[i-1]['time'];
+      console.log(prevTime);
+      queue[i]['time'] = prevTime;
+    }
 }
 http.listen(4000, function(){
   console.log('listening on *:4000');
