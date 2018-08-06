@@ -8,7 +8,7 @@ var $min = $('#min');
 
 var socketId = '';
 var socketQueue = [];
-const ACCESSSECONDS = 20;
+const ACCESSSECONDS = 10
 $loginBtn.click(function (){
     socket.emit('add to queue');
     $loginBtn.prop('disabled', true);
@@ -20,8 +20,6 @@ $loginBtn.click(function (){
 
 
 socket.on('set timer', function(time, id, queue){
-  time = time - ACCESSSECONDS;
-  console.log('Set time on '+ ACCESSSECONDS);
     timer();
     socketId = id;
     socketQueue = queue;
@@ -29,22 +27,24 @@ socket.on('set timer', function(time, id, queue){
 
 socket.on('give access', function(){
     console.log('give access');
-    accessTimer(ACCESSSECONDS);
-    setAccessToBtn(false);
+    accessTimer(10);
+    setAccessToBtn($mainBtn, false);
 });
 
 socket.on('endless access', function(){
-    console.log('endless access');
+    console.log('endless');
 });
+
+
 
 socket.on('take away access', function(){
     console.log('take away access');
-    setAccessToBtn(true);
+    setAccessToBtn($mainBtn, true);
+    setAccessToBtn($loginBtn, false);
     $infin.css('display', 'none');
 });
 socket.on('update timers', function(queue) {
-  console.log('timers updated');
-  console.log(queue);
+  console.log('updated');
   socketQueue = queue;
   // var obj = socketQueue.find(o => o.id === socketId);
   // var index = socketQueue.indexOf(obj);
@@ -52,7 +52,6 @@ socket.on('update timers', function(queue) {
 });
 
 socket.on('infin', function(){
-  console.log('infine');
     $infin.css('display', 'block');
     $time.css('display', 'none');
 })
@@ -65,18 +64,18 @@ socket.on('infin', function(){
 // })
 
 function timer(time){
+    $time.css('display', 'flex');
   // console.log('set timer on '+time+' seconds');
   var timer = setInterval(function(){
     var obj = socketQueue.find(o => o.id === socketId);
     var index = socketQueue.indexOf(obj);
-    console.log(index);
     var time = socketQueue[index]['time'];
     if (time < ACCESSSECONDS) {
       clearInterval(timer);
       // $('#time').css('display', 'none');
       return 0;
     }
-    var toAccess = time - ACCESSSECONDS;
+    var toAccess = time -10;
     var min = Math.floor(toAccess/60);
     var sec = toAccess-(min*60);
     $sec.html(sec);
@@ -93,9 +92,9 @@ function accessTimer(time){
 
     setTimeout(function(){
         clearInterval(timer);
-    }, ACCESSSECONDS*1000)
+    }, 10000)
 }
 
-function setAccessToBtn (val){
-    $mainBtn.prop('disabled', val);
+function setAccessToBtn (btn ,val){
+    btn.prop('disabled', val);
 }

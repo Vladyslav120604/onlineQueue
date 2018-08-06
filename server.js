@@ -5,7 +5,7 @@ var io = require('socket.io')(http);
 
 var queue = [];
 var isUserAdded = false;
-const ACCESSSECONDS = 20;
+const ACCESSSECONDS = 10;
 app.use(express.static(__dirname +'/public'));
 
 
@@ -15,24 +15,7 @@ io.on('connection', function(socket){
 
     socket.on('disconnect', function(){
         console.log('dis');
-        // // console.log(socket.queueUserId);
-        var obj = queue.find(o => o.id == socket.id);
-        var index = queue.indexOf(obj);
-        // // console.log(index);
-        if (index == -1) {
-          return false;
-        }
-        // console.log('result');
-        // console.log(queue[index]['time'] = 0);
-        // accessTimer(socket, true);
-        // clearInterval(checkAccess);
-        clearInterval(socket.accessTimer);
-        clearInterval(socket.checkAccess);
-        // console.log(queue);
-        updateTimers(index);
-        deleteUserFromQueue(index);
-        // console.log(queue);
-        io.emit('update timers', queue);
+        disconnect(socket);
     });
 
     socket.on('add to queue', function(){
@@ -66,10 +49,10 @@ function accessTimer(socket, isDelete){  //вот здесь userId = 0
         if (queue[0]['time'] <= 0) {
           clearInterval(socket.accessTimer);
           socket.emit('take away access');
-          socket.disconnect();
+          disconnect(socket);
           return 0;
         }
-        // console.log('Time to access end: ' + queue[0]['time']);
+        console.log('Time to access end: ' + queue[0]['time']);
         queue[0]['time']--;
       }, 1000);
 }
@@ -86,6 +69,24 @@ function accessTimer(socket, isDelete){  //вот здесь userId = 0
 //         accessTimer(socket);
 //     }, queue[index].timeToStart*1000);
 //     console.log(socket);
+function disconnect(socket){
+    var obj = queue.find(o => o.id == socket.id);
+        var index = queue.indexOf(obj);
+        // // console.log(index);
+        if (index == -1) {
+          return false;
+        }
+        // console.log('result');
+        // console.log(queue[index]['time'] = 0);
+        // accessTimer(socket, true);
+        // clearInterval(checkAccess);
+        clearInterval(socket.accessTimer);
+        clearInterval(socket.checkAccess);
+        // console.log(queue);
+        updateTimers(index);
+        deleteUserFromQueue(index);
+        // console.log(queue);
+}
 //
 // }
 function timer(socket) {
@@ -102,7 +103,7 @@ function timer(socket) {
       return 0;
     }
     var toAccess = queue[index]['time']-10;
-    // console.log('Time to Access: ' + toAccess);
+    console.log('Time to Access: ' + toAccess);
     queue[index]['time']--;
   }, 1000);
 }
@@ -136,16 +137,11 @@ function deleteUserFromQueue(id){
 }
 
 function updateTimers(deleteIndex) {
-    // var delTime = queue[deleteIndex]['time'];
-    if (deleteIndex == 0) {
-      return false;
+    var delTime = queue[deleteIndex]['time'];
+    for (var i = deleteIndex; i < queue.length; i++) {
+      queue[i]['time']-=delTime;
     }
-    for (var i = (deleteIndex+1); i < queue.length; i++) {
-      console.log(queue[i]['time'] + ' -> ' + queue[i-1]['time']);
-      var prevTime = queue[i-1]['time'];
-      console.log(prevTime);
-      queue[i]['time'] = prevTime;
-    }
+    io.emit('update timers', queue);
 }
 http.listen(4000, function(){
   console.log('listening on *:4000');
