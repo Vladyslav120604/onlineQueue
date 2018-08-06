@@ -38,7 +38,12 @@ io.on('connection', function(socket){
       var timeInQueue = getTimeInQueue(queue.length);
         queue.push({
             id: socket.id,
+<<<<<<< HEAD
             time: timeInQueue,
+=======
+            time: 10,
+            status: 'ending'
+>>>>>>> 5becc3cf0778468e2de58ca62aff9bef8f1ea1d1
         });
 
         // socket.socketId = socket.id;
@@ -52,6 +57,7 @@ io.on('connection', function(socket){
     });
 });
 
+<<<<<<< HEAD
 function accessTimer(socket, isDelete){  //вот здесь userId = 0
       if (isDelete) {
         clearInterval(accessTimer);
@@ -70,6 +76,30 @@ function accessTimer(socket, isDelete){  //вот здесь userId = 0
         console.log('Time to access end: ' + queue[0]['time']);
         queue[0]['time']--;
       }, 1000);
+=======
+function accessTimer(userId, socket){
+    var queueTimer = setInterval(function(){
+        queue[userId]['time']--;
+        console.log(userId);
+        console.log(queue[userId]['time']);
+        if(queue[userId]['time'] == 1 && queue.length == 1){
+        	console.log('endless');
+            socket.emit('endless access');
+        	queue[userId]['status'] = 'endless';
+        	clearTimeout(accessTimeout);
+        };
+        if(queue[userId]['status'] == 'endless' && queue.length > 1){
+            socket.emit('take away access');
+            socket.disconnect();
+        	console.log('finish');
+        }
+    }, 1000)
+    var accessTimeout = setTimeout(function(){
+        clearInterval(queueTimer);
+        socket.emit('take away access');
+        socket.disconnect();
+    }, 10000)
+>>>>>>> 5becc3cf0778468e2de58ca62aff9bef8f1ea1d1
 }
 // function queueTimer(index, socket){
 //   var timerToAccess = setInterval(function(){

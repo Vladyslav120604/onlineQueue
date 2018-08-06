@@ -26,6 +26,10 @@ socket.on('give access', function(){
     setAccessToBtn(false);
 });
 
+socket.on('endless access', function(){
+    console.log('endless');
+});
+
 socket.on('take away access', function(){
     console.log('take away access');
     setAccessToBtn(true);
