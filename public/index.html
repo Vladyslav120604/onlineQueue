@@ -12,11 +12,16 @@
 <body>
   <ul class="content">
     <li class="login"><button class="addToQueue">submit</button></li>
-    <li class="chat">
+    <!-- <li class="chat">
       <progress id="userProgress" value='100' max="100"></progress>
+    </li> -->
+    <li id="time">
+      <p id="min">0</p>
+      <pre> : </pre>
+      <p id="sec">0</p>
     </li>
     <li class="mainBtnBlock"><button id="mainBtn" disabled='true'>click me</button></li>
-    <li id="time"></li>
+
   </ul>
 
   <script src="/socket.io/socket.io.js"></script>

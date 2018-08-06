@@ -46,17 +46,9 @@ io.on('connection', function(socket){
         var index = queue.indexOf(obj);
 
 
-        socket.emit('set timer', queue[index].timeToStart, queue);
+        socket.emit('set timer', queue[index]['time'], socket.id, queue);
         timer(socket);
         console.log(queue);
-    });
-    socket.on('update timer', function (index) {
-      // clearTimeout(timeToAccess);
-      console.log('timer delete');
-    //   var timeToAccess = setTimeout(function(){
-    //     socket.emit('give access');
-    //     accessTimer(socket);
-    //   }, queue[index].timeToStart*1000);
     });
 });
 
@@ -66,6 +58,9 @@ function accessTimer(socket, isDelete){  //вот здесь userId = 0
         return false;
       }
       socket.accessTimer = setInterval(function(){
+        if (queue[0]['time'] <= 0 && queue.length == 1) {
+          queue[0]['time'] = 1;
+        }
         if (queue[0]['time'] <= 0) {
           clearInterval(socket.accessTimer);
           socket.emit('take away access');
@@ -75,13 +70,6 @@ function accessTimer(socket, isDelete){  //вот здесь userId = 0
         console.log('Time to access end: ' + queue[0]['time']);
         queue[0]['time']--;
       }, 1000);
-
-
-    // setTimeout(function(){
-    //     clearInterval(queueTimer);
-    //     socket.emit('take away access');
-    //     socket.disconnect();
-    // }, ACCESSSECONDS * 1000);
 }
 // function queueTimer(index, socket){
 //   var timerToAccess = setInterval(function(){
@@ -150,6 +138,7 @@ function updateTimers(deleteIndex) {
     for (var i = deleteIndex; i < queue.length; i++) {
       queue[i]['time']-=delTime;
     }
+    io.emit('update timers', queue);
 }
 http.listen(4000, function(){
   console.log('listening on *:4000');
