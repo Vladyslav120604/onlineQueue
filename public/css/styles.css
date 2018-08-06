@@ -6,3 +6,7 @@ li{
   display: flex;
   flex-direction: row;
 }
+
+#infin{
+	display: none;
+}

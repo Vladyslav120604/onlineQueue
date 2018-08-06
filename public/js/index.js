@@ -1,6 +1,11 @@
 var socket = io();
 var $loginBtn = $('.addToQueue');
 var $mainBtn = $('#mainBtn');
+var $time = $('#time');
+var $infin = $('#infin');
+var $sec = $('#sec');
+var $min = $('#min');
+
 var socketId = '';
 var socketQueue = [];
 const ACCESSSECONDS = 10
@@ -22,7 +27,7 @@ socket.on('set timer', function(time, id, queue){
 
 socket.on('give access', function(){
     console.log('give access');
-    timer(10);
+    accessTimer(9);
     setAccessToBtn(false);
 });
 
@@ -33,6 +38,7 @@ socket.on('endless access', function(){
 socket.on('take away access', function(){
     console.log('take away access');
     setAccessToBtn(true);
+    $infin.css('display', 'none');
 });
 socket.on('update timers', function(queue) {
   console.log('updated');
@@ -41,6 +47,12 @@ socket.on('update timers', function(queue) {
   // var index = socketQueue.indexOf(obj);
 
 });
+
+socket.on('infin', function(){
+    $infin.css('display', 'block');
+    $time.css('display', 'none');
+})
+
 // socket.on('verification', function(val){
 //     if(!val){
 //         setAccessToBtn(true);
@@ -48,7 +60,7 @@ socket.on('update timers', function(queue) {
 //     }
 // })
 
-function timer(){
+function timer(time){
   // console.log('set timer on '+time+' seconds');
   var timer = setInterval(function(){
     var obj = socketQueue.find(o => o.id === socketId);
@@ -56,16 +68,27 @@ function timer(){
     var time = socketQueue[index]['time'];
     if (time < ACCESSSECONDS) {
       clearInterval(timer);
-      $('#time').css('display', 'none');
+      // $('#time').css('display', 'none');
       return 0;
     }
     var toAccess = time -10;
     var min = Math.floor(toAccess/60);
     var sec = toAccess-(min*60);
-    $('#sec').html(sec);
-    $('#min').html(min);
+    $sec.html(sec);
+    $min.html(min);
     socketQueue[index]['time']--;
   }, 1000);
+}
+
+function accessTimer(time){
+    var timer = setInterval(function(){
+        $('#sec').html(time);
+        time--;
+    }, 1000);
+
+    setTimeout(function(){
+        clearInterval(timer);
+    }, 10000)
 }
 
 function setAccessToBtn (val){

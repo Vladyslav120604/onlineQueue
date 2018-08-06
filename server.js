@@ -60,6 +60,7 @@ function accessTimer(socket, isDelete){  //вот здесь userId = 0
       socket.accessTimer = setInterval(function(){
         if (queue[0]['time'] <= 0 && queue.length == 1) {
           queue[0]['time'] = 1;
+          socket.emit('infin');
         }
         if (queue[0]['time'] <= 0) {
           clearInterval(socket.accessTimer);
