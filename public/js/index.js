@@ -19,7 +19,7 @@ $loginBtn.click(function (){
 // })
 
 
-socket.on('set timer', function(time, id, queue){
+socket.on('set timer', function(id, queue){
     timer();
     socketId = id;
     socketQueue = queue;
@@ -70,7 +70,7 @@ function timer(time){
     var obj = socketQueue.find(o => o.id === socketId);
     var index = socketQueue.indexOf(obj);
     var time = socketQueue[index]['time'];
-    if (time < ACCESSSECONDS) {
+    if (time <= ACCESSSECONDS) {
       clearInterval(timer);
       // $('#time').css('display', 'none');
       return 0;
@@ -87,12 +87,15 @@ function timer(time){
 function accessTimer(time){
     var timer = setInterval(function(){
         $('#sec').html(time);
+        if (time <= 0) {
+          clearInterval(timer);
+        }
         time--;
     }, 1000);
 
-    setTimeout(function(){
-        clearInterval(timer);
-    }, 10000)
+    // setTimeout(function(){
+    //     clearInterval(timer);
+    // }, ACCESSSECONDS*1000)
 }
 
 function setAccessToBtn (btn ,val){
