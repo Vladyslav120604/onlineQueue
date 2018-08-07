@@ -60,10 +60,13 @@ function disconnect(socket){
         // console.log(queue[index]['time'] = 0);
         // accessTimer(socket, true);
         // clearInterval(checkAccess);
-        updateTimers(index);
         clearInterval(socket.accessTimer);
         clearInterval(socket.checkAccess);
+        if (queue[index]['time'] >= 1) {
+          updateTimers(index);
+        }
         // console.log(queue);
+
         deleteUserFromQueue(index);
         // console.log(queue);
 }
@@ -82,9 +85,16 @@ function timer(socket) {
       accessTimer(socket);
       return 0;
     }
-    var toAccess = queue[index]['time']-10;
+    var toAccess = queue[index]['time']-ACCESSSECONDS;
     // console.log('Time to Access: ' + toAccess);
-    queue[index]['time']--;
+    // if (index == 0) {
+    //   queue[index]['time']--;
+    //   return;
+    // }
+    // if ((queue[index-1]['time']+ACCESSSECONDS)>= queue[index]['time']) {
+    //   console.log('force - ');
+      queue[index]['time']--;
+    // }
   }, 1000);
 }
 
@@ -111,19 +121,29 @@ function deleteUserFromQueue(id){
 }
 
 function updateTimers(deleteIndex) {
-  if (deleteIndex == 0) {
+  if (deleteIndex == 0 ) {
+    console.log(queue);
+    for (var i = 0; i < queue.length; i++) {
+      queue[i]['time'] = ACCESSSECONDS * i;
+    }
+    console.log(queue);
+    io.emit('update timers', queue);
     return false;
   }
+  console.log('normal');
     var changeArray = [];
     for (var i = 0; i < queue.length; i++) {
       changeArray.push(queue[i]['time'])
     }
+    console.log(changeArray);
     for (var i = (deleteIndex+1); i < queue.length; i++) {
-      changeArray[i] = queue[i-1]['time'];
+      changeArray[i] = queue[i-1]['time'] + 1;
     }
+    console.log(changeArray);
     for (var i = 0; i < queue.length; i++) {
       queue[i]['time'] = changeArray[i];
     }
+    console.log(queue);
     io.emit('update timers', queue);
 }
 http.listen(4000, function(){
